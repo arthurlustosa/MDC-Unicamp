@@ -1,0 +1,291 @@
+---
+title: "Introdução a Linguagem R"
+author: "Arthur Lustosa"
+date: "2/15/2020"
+output: html_document
+---
+# Mineração de Dados Complexos - Unicamp
+
+## Tipos de Objetos
+
+### Objetos Básicos
+
+Em R existem 5 classes de objetos básicos (ou atômicos):
+*Caractere (character = string)
+*Numérico (numeric = número real)
+*Inteiro (integer = número inteiro)
+*Complexo (complex = número complexo)
+*Lógico (logical = lógico)
+
+Existem funções que auxiliam na verificação dos tipos
+
+
+*is.character()
+*is.numeric()
+*is.integer()
+*is.complex()
+*is.logical()
+
+### Objetos Complexos
+
+*Vetores
+*Matrizes
+*Listas
+*Fatores
+*Data frames
+
+#### Vetores
+Podemos usar a função c() para criar vetores de objetos. Os objetos de um vetor devem ser todos do mesmo tipo.
+Exemplo de vetores de objetos numéricos
+
+```{r, warning=FALSE}
+x <- c(0.5, 3.1, 0.6, 1.5); x #utilizar o ; depois da atribuição exibe a varivável criada
+```
+
+```{r, warning=FALSE}
+c(0.5, 3.1, 0.6, 1.5) #o vetor esta sendo criado sem atribuição
+```
+
+Exemplo de vetores de objetos lógicos
+```{r, warning=FALSE}
+x <- c(TRUE, FALSE, TRUE, FALSE, TRUE); x
+y <- c(T, F, T, F, T); y  
+
+#x e y são equivalentes
+
+#vetores de objetos string
+w <- c("a", "b", "c", "d")
+
+#vetores de inteiro
+i <- c(1L, 2L, 3L)
+```
+
+Podemos criar uma sequência (um vetor) de valores numéricos com : 
+
+```{r, warning=FALSE}
+q <- 1:10; q
+x <- -3:3; x
+
+# exemplos
+4:4
+10:1
+```
+
+A função seq() possibilita a construção de sequencias com intervalos
+```{r, warning=FALSE}
+#a funcao seq() inicia (from) em 1 , até (to) 10, com intervalos  (by) de 2
+seq(from = 1, to = 10, by = 2)
+seq(from = 1, to = 10, by = 3)
+seq(from = 1, to = 5, by = .1)
+
+#o parametro length.out especifica a quantidade de elementos que vc quer no vetor
+seq(from = 1, by = 10, length.out = 10)
+
+#a funcao rep() serve para repedir numeros,
+rep(x = 1, times = 5)
+rep(x = c(1, 2, 3), times = 3)
+
+```
+
+Funções que transformam o objeto num tipo diferente utilizando _Coerção Implícita_
+
+```{r, warning=FALSE}
+x <- -1.3:3; x
+
+as.integer(x)
+as.logical(x)
+as.character(x)
+as.complex(x)
+```
+
+É possível cirar um vetor com a função vector() especificando o tipo e o tamanho do vetor
+```{r, warning=FALSE}
+vector("logical", length = 5)
+vector("numeric", length = 6)
+vector("complex", length = 7)
+vector("character", length = 8)
+```
+
+Valores Desconhecidos
+Os valores *NA* (Not Available) e *NaN* (Not a Number) são usados para indicar desconhecidos. As funções is.na() e is.nan() são usadas, respectivamente, para tester se um valor é NA ou NaN
+
+```{r, warning=FALSE}
+x <- c(1, 2, NaN, NA, 4)
+is.na(x)
+is.nan(x)
+```
+
+#### Matrizes
+Matrizes são vetores com um atributo especial dim (dimensões). Assim como vetores, todos os objetos de uma matriz devem ser do mesmo tipo. O atributo dim (dimensões) é um vetor de tamanho (pelo menos) 2.
+
+```{r, warning=FALSE}
+m <- matrix(nrow = 2, ncol = 3); m
+dim(m)
+attributes(m)
+
+#adicionando dados coluna por coluna
+matrix(data = 1:2, nrow = 2, ncol = 3)
+
+#adicionando dados linha por linha
+matrix(data = 1:2, nrow = 2, ncol = 3, byrow = TRUE)
+
+#adicionando dimencao ao vetor e transformando em colunas
+m <- 1:24;m 
+dim(m)
+dim(m) <- c(4,6);m
+```
+Matrizes podem ser criadas juntando vetores, linha a linha _rbind()_ ou coluna a coluna _cbind()_
+
+```{r, warning=FALSE}
+x <- 1:3
+y <- 7:9
+
+#linha a linha
+rbind(x,y)
+#coluna a coluna
+cbind(x,y)
+```
+
+#### Listas
+Em R é possivél criar uma lista (list) onde cada elemento é um objeto, um vetor, uma matriz ou mesmo uma outra lista. 
+
+```{r, warning=FALSE}
+list("a", 2.3, FALSE, 1+2i)
+```
+
+#### Fatores
+Fatores são usados para representar categorias. A função factor() é usada para criar uma coleção de fatores.
+
+```{r, warning=FALSE}
+factor(c("sim", "sim", "nao", "sim", "nao"))
+
+#ordenando os fatores
+factor(c("P", "G", "M", "P", "P"), levels = c("P", "M", "G"), ordered = TRUE)
+```
+
+#### Data Frames
+Data frames são usados para armazenar dados tabulares. DF são tipos especiais de listas onde cada um dos seus elementos Sãp vetores (cada um deles representando uma coluna), todos com o mesmo número de subelementos (todas as colunas possuem o mesmo número de elementos). Ao contrário das matrizes (e similar às listas), cada coluna pode armazenar objetos de um tipo diferente.
+Data frames são criados usando a função data.frame().
+Dados tabulares podem ser lidos e armazenados em data frames usando as funções read.table() e read.csv()
+
+```{r, warning=FALSE}
+name <- c("Maria", "João", "Julia")
+age <- c(19, 21, 20)
+
+dados <- data.frame(nome = name, idade = age, stringsAsFactors = FALSE)
+dados[[1]]
+
+dados <- data.frame(nome = name, idade = age)
+dados[[1]]
+
+#adicionando colunas no dataframe
+cliente <- c(T, F, T)
+dados <- cbind(dados, cliente)
+dados
+```
+
+#### Nomes
+Objetos em R podem ter nomes (names), que são muito úteis na escrita de códigos legíveis e na definição de objetos auto-descritivos
+
+```{r, warning=FALSE}
+x <- c(24, 32, 28); x
+
+names(x) <- c("Carla", "Arthur", "Gui")
+
+names(x)
+```
+
+#### Subconjuntos
+Existem alguns operadores em R que podem ser usados para extrair um subconjunto de objetos (de um vetor, de uma matriz, de uma lista, etc):
+* [] retorna um objeto da mesma classe do objeto original. Pode ser usado para extrair mais do que um elemento
+* [[]] retorna um elemento específico
+* $
+
+```{r, warning=FALSE}
+x <- c("a", "b", "c", "d", "e"); x
+
+x[1]
+
+x[2:4]
+
+#acessando por indices
+x[c(1,3,5)]
+
+#vetor de indices negativos serve para remover o elemento pedido
+x[-2]
+
+#acessando elementos
+x <- c(1, 1, 4, 2, 4, 6, 7, 9, 5, 1); x
+x > 2
+x[x > 2]
+
+#acessando elementos de uma matriz
+m <- matrix(nrow = 3, ncol = 4, data = 1:12); m
+#acessando linha
+m[1,]
+#acessando coluna
+m[,1]
+m[,1, drop=FALSE] #elementos em formato coluna
+```
+
+#### Datas e Horários
+
+*Dados e horários sao representados por classes especiais em R
+*Datas são representadas pela classe _Date_
+*Horários são representados pelas classes _POSIXct_ e _POSIXlt_
+*Datas são representadas internamente pelo número de dias desde 01/01/1970
+*Horários são representados internamente pelo número de segundos desde 01/01/1970
+
+```{r, warning=FALSE}
+#funcoes
+nascimento <- as.Date("1993-03-22")
+nascimento
+
+#data atual
+data <- Sys.Date()
+class(data)
+
+data - as.Date("1970/01/01")
+#datas sao objetos que guardam a quantidade de dias
+unclass(data)
+```
+
+A classe POSIXct é de fato apenas um número, útil para armazenar horários de forma compacta (por exemplo em dataframes)
+A classe POSIXlt é de fato uma lista, que armazena várias informações úteis como dia da semana, dia do ano, mês, etc.
+Existem algumas funções genéricas que funcionam tanto como datas, quanto horários:
+*weekdays(): _retorn o dia da semana_
+*months(): _retorna o mês do ano_
+*quarters(): _retorna o trimestre ("Q1", "Q2", "Q3", "Q4"_)
+
+```{r, warning=FALSE}
+agora <- Sys.time(); agora
+
+unclass(agora)
+
+weekdays(agora)
+
+#conversoes
+agora <- as.POSIXlt(agora)
+
+names(unclass(agora))
+```
+
+Se um horário não estiver no formato padrão adotado por R (”YYYY-MM-DD HH:MM:SS TZN”), ele pode convertido usado a função strptime(), que retorna um objeto da classe POSIXlt.
+
+```{r, warning=FALSE}
+#convertendo string de data com hora para o formato padrão de R
+s1 <- "15/08/2015-17:10"
+t1 <- strptime(s1, "%d/%m/%Y-%H:%M")
+t1
+
+s2 <- "09/19/1994 04:37:22 PM"
+t2 <- strptime(s2, "%m/%d/%Y %I:%M:%S %p")
+t2
+
+```
+
+
+```{r, warning=FALSE}
+```
+
+

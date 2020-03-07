@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1583585364777.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2877110230",
+    "id" : "70D36E87",
+    "lastKnownWriteTime" : 1583581293,
+    "last_content_update" : 1583581293,
+    "path" : "~/Desktop/MDC/INF-0611/Trabalho_1/ranking_metrics.R",
+    "project_path" : null,
+    "properties" : {
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 11,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

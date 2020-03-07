@@ -1,0 +1,172 @@
+---
+title: "Análise de Dados - Aula 02"
+author: "Arthur Lustosa"
+date: "2/29/2020"
+output: html_document
+---
+# Mineração de Dados Complexos - Unicamp
+
+## Constantes
+
+Em R existem algumas constantes internas predefinidas
+
+* _letters_ um vetor de caracteres com todas as letras minúsculas
+* _LETTERS_ letras maiúsculas 
+
+```{r, warning=FALSE}
+letters
+
+LETTERS
+```
+
+* _month.abb_: um vetor de caracteres (strings) com as abreviaturas (com 3 letras) dos nomes dos meses (em inglês).
+
+```{r, warning=FALSE}
+month.abb
+
+month.name
+
+pi
+```
+
+Devemos tomar cuidado com essas “constantes”, pois são implementadas como variáveis e seus valores podem ser sobrescritos.
+
+## Funções Predefinidas
+
+### Funções Matemáticas Básicas
+
+* sqrt(): raiz quadrada
+* exp(): exponenciação (base natural)
+* factorial(): fatorial.
+* log(): logarítmo
+* ceiling(): arredondamento para cima.
+* floor(): arredondamento para baixo.
+* trunc(): truncamento.
+* round(): arredondamento.
+
+```{r, warning=FALSE}
+
+sqrt(c(1024, 49, 225))
+
+#round (numeros pares o arredondamento é para baixo, números ímpares para cima)
+#para numeros negativos a regra funciona ao contrário
+#essa regra é uma consessão internacional - Regra ISO
+
+round(0.5:9)
+round(0.7:9)
+```
+
+Exercício
+
+Considerando a sequência númerica x, selecione todos os elementos de x que podem ser representados por um número inteiro, ou seja, cuja parte fracionária é igual a zero (exemplo: 1.0, 2.0, etc).
+```{r, warning=FALSE}
+x <- seq(1, 10, 0.25); x
+
+x[x %% 1 == 0]
+x[x == floor(x)]
+x[x == trunc(x)]
+```
+
+#### Funções Trigonométricas
+
+* sin(): seno.
+* cos(): cosseno.
+* tan(): tangente.
+* asin(): arco seno.
+* acos(): arco cosseno.
+* atan(): arco tangente.
+
+#### Funções para Sequências, Vetores, Listas e Fatores
+
+* seq(): cria uma sequência de números. 
+* rep(): replica os valores de um vetor ou de uma lista.
+* gl(): gera um vetor de fatores, sendo que os dois primeiros parâmetros indicam, respectivamente, o número de fatores e o número de réplicas de cada fator.
+
+```{r, warning=FALSE}
+gl <- gl(3, 10,  labels = c("bronze", "prata", "ouro"), ordered = TRUE); gl
+
+x <- runif(10)
+x[order(x)]
+```
+
+* length(): determina o número de elementos de um vetor, de uma lista ou de uma matriz. 
+* outer(): dados dois vetores e o nome de uma função (ou de um operador binário) calcula o “produto” dos dois vetores em relação a função dada.
+* sort(): ordena um vetor de forma crescente. Para ordenar de forma decrescente, usar o argumento “decreasing = TRUE”.
+* order(): retorna a posição do menor elemento, do segundo menor elemento, e assim por diante, até do maior elemento de um vetor dado.
+* rank(): retorna as posições relativas dos elementos de um vetor, em relação ao vetor ordenado.
+* rev(): reverte a ordem dos elementos de um vetor.
+* unique(): retorna um vetor sem os elementos repetidos.
+* duplicated(): dado um vetor, indica quais os elementos estão repetidos.
+* sum(): soma dos valores de um vetor ou de uma estrutura tabular.
+  * rowSums(): somas das linhas de uma estrutura tabular.
+  * colSums(): somas das colunas de uma estrutura tabular.
+* prod(): produto dos valores de um vetor ou de uma estrutura tabular
+
+* Funções cumulativas:
+  * cummin(): mínimo cumulativo.
+  * cummax(): máximo cumulativo.
+  * cumsum(): soma cumulativa.
+  * cumprod(): produto cumulativo.
+  
+Exercício
+Dado um vetor qualquer, liste os elementos que aparecem repetidos no vetor. Por exemplo, os elementos repetidos no vetor (1 2 1 5 3 4 1 5 2 8 1) são 1, 2 e 5.
+  
+```{r, warning=FALSE}
+z <- c(1, 2, 1, 5, 3, 4, 1, 5, 2, 8, 1)
+unique(sort(z[duplicated(z)]))
+```
+
+#### Funções para conjuntos
+
+* union(): união.
+* intersect(): intersecção.
+* setdiff(): diferença de conjuntos.
+* setequal(): igualdade de conjuntos.
+* is.element(): verifica se um elemento pertence a um conjunto.
+
+```{r, warning=FALSE}
+z <- c(1, 2, 1, 5, 3, 4, 1, 5, 2, 8, 1)
+
+y <- unique(sort(z[duplicated(z)]))
+w <- unique(sort(z[!duplicated(z)]))
+```
+
+#### Funções Estatísticas
+
+* mean(): média de um vetor.
+  * rowMeans(): médias das linhas de uma estrutura tabular.
+  * colMeans(): médias das colunas de uma estrutura tabular.
+* min(): mínimo de um vetor ou de uma estrutura tabular.
+* max(): máximo de um vetor ou de uma estrutura tabular.
+* range(): mínimo e máximo de um vetor ou de uma estrutura tabular.
+* median(): mediana de um vetor.
+* quantile(): mínimo, primeiro quartil, mediana, terceiro quartil e máximo de um vetor.
+* summary(): sumário dos dados de um vetor ou de uma estrutura tabular.
+* var(): variância de um vetor.
+* sd(): desvio padrão de um vetor.
+* cor(): correlação (dois vetores ou uma estrutura tabular).
+
+#### Funções Probabilísticas 
+
+* runif(): gera números aleatórios, dado um intervalo, considerando uma distribuição uniforme.
+* rnorm(): gera números aleatórios, dado um valor médio e um desvio padrão, considerando uma distribuição normal.
+
+Para outros tipos de distribuições de números aleatórios, consulte ?Distributions.
+* sample(): dado um vetor (ou número inteiro x, indicando a sequência 1:x), sorteia um número dado de elementos do mesmo.
+É possível definir se o sorteio será com ou sem (padrão) reposição.
+Também é possível especificar a probabilidade de cada elemento do vetor ser sorteado
+
+```{r, warning=FALSE}
+# gerando conjunto de numeros aleatorios com 1mi elementos
+n <- 1000000
+rn <- rnorm(n)
+
+#desvio padrao
+sd(rn)
+
+#Estimar a porcentagem de elementos que diferem (em módulo) de mais que um desvio padrão do valor médio em #um vetor numérico qualquer que respeite, aproximadamente, uma distribuição normal.
+sum(abs(rn) > 3*sd(rn))/n
+
+summary(rn)
+```
+

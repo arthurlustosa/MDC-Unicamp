@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1583585422530.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "8DF53032",
+    "lastKnownWriteTime" : 1582414602,
+    "last_content_update" : 1582414602,
+    "path" : "~/Desktop/MDC/INF-0611/aula1/tarefa_aula1.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "84,0",
+        "scrollLine" : "60"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 12,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
