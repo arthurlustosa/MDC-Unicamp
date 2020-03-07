@@ -1,0 +1,271 @@
+
+# Linux
+setwd("~/user/diretorio/INF-0611/aula2/")
+
+# Windows
+setwd("C:\\user\\diretorio\\INF-0611\\aula2\\")
+
+install.packages("tm")
+install.packages("dplyr")
+install.packages("corpus")
+install.packages("ggplot")
+install.packages("ptstem")
+install.packages("ecodist")
+install.packages("superml")
+install.packages("tidytext")
+install.packages("janeaustenr")
+
+# carregando a biblioteca e criando o documento
+library(corpus)
+text <- "...Mas a saudade é isto mesmo; é o passar e repassar das memórias antigas..."
+
+# criando os tokens
+tokens <- text_tokens(text); tokens
+
+# carregando a biblioteca
+library(tm)
+
+# criando um objeto do tipo corpus
+corpus <- Corpus(VectorSource(tokens))
+
+# tm_map aplica operações ao corpus
+# listar operações disponíveis
+getTransformations()
+
+# removendo stopwords do português
+text_processed <- tm_map(corpus, removeWords, stopwords("portuguese"))
+
+# visualizando os tokens sem as stopwords
+inspect(text_processed)
+
+# criando os documentos
+text_en <- c("Because I could not stop for Death -", 
+             "He kindly stopped for me -", 
+             "The  Carriage held but just Ourselves -", 
+             "and Immortality")
+
+# removendo stopwords do inglês
+corpus_en <- Corpus(VectorSource(text_en))
+text_processed_en <- tm_map(corpus_en, removeWords, stopwords("english"))
+
+# visualizando os documentos sem as stopwords
+inspect(text_processed_en)
+
+# carregando a biblioteca
+library(corpus)
+
+# aplicando tokenização seguida de stemming
+stemming_c <- text_tokens(text, stemmer = "pt") 
+
+# visualizando os tokens após o stemming
+stemming_c
+
+# carregando a biblioteca
+library(ptstem)
+
+# aplicando stemming com outros algoritmos
+stemming <- ptstem(tokens[[1]], algorithm = "porter", complete = FALSE)
+
+# visualizando os tokens após o stemming
+stemming
+
+# aplicando stemming
+stems_en <- text_tokens(text_en, stemmer = "en") 
+
+# visualizando documentos após o stemming
+stems_en
+
+# carregando a biblioteca
+library(tm)
+
+# criando um documento
+text <- "...Mas a saudade          é isto    mesmo; é o passar e repassar das memórias  antigas..."
+
+# criando um corpus
+corpus <- Corpus(VectorSource(text))
+
+# removendo espaços em branco
+text_processed <- tm_map(corpus, stripWhitespace)
+text_processed[[1]]$content
+
+# removendo pontuação
+text_processed <- tm_map(text_processed, removePunctuation)
+text_processed[[1]]$content
+
+# convertendo para letras minúsculas
+text_processed <- tm_map(text_processed, content_transformer(tolower))
+text_processed[[1]]$content
+
+# carregando biblioteca
+library(tm)
+
+# preparando os documentos e corpus
+chico_txt <- c("Não sei", "só sei que foi assim")
+chico_crps <- Corpus(VectorSource(chico_txt))
+
+# criando matriz termo-documento
+chico_tdm <- TermDocumentMatrix(chico_crps, 
+                                control = list(weighting = weightBin))
+
+# visualizando a matriz termo-documento
+inspect(chico_tdm)
+
+# carregando a base de dados
+data(acq)
+
+# computando a matriz termo-documento e aplicando 
+# o processamento nos dados 
+tdm <- TermDocumentMatrix(acq, 
+                          control = list(removePunctuation = TRUE, 
+                                         stopwords = TRUE, 
+                                         weighting = weightBin))
+
+# visualizando a matriz termo-documento
+inspect(tdm)
+
+# importando a biblioteca
+library(tm)
+
+# criando os documentos
+documents <- c("To be or not to be. I am what I am.", 
+               "To do is to be. To be is to do.", 
+               "I think therefore I am. Let it be.")
+
+# criando o corpus
+corpus <- Corpus(VectorSource(documents))
+
+# convertendo para letras minúsculas
+text <- tm_map(corpus, content_transformer(tolower))
+
+# removendo pontuação
+text <- tm_map(text, removePunctuation)
+
+# transformando documentos em lista de tokens
+docs <- text_tokens(text); docs
+
+# extraindo vocabulário
+vocab <- sort(unique(unlist(docs))); vocab
+
+# criando um data frame vazio para guardar o índice
+index <- data.frame(term = character(), docs = numeric())
+
+# para cada termo do vocabulário 
+for (t in c(1:length(vocab))) {
+  line <- c()
+  # verificamos a quais documentos o termo pertence 
+  for (d in c(1:length(docs))) {
+    if (is.element(vocab[t], docs[[d]])) {
+      line<-append(line, d)
+    }
+  }
+  # adicionando uma nova linha ao data.frame
+  line <- data.frame(term = vocab[t], 
+                     docs = I(list(line)))
+  index <- rbind(index, line)
+}
+
+# visualizando o índice invertido criado
+index
+
+# carregando bibliotecas
+library(dplyr)
+library(janeaustenr)
+library(tidytext)
+library(ggplot2)
+
+# carregando livros Jane Austin
+book_words <- austen_books() 
+
+# obtendo tokens por livro
+book_words <- unnest_tokens(book_words, word, text) 
+
+# contando a frequência dos tokens em cada livro
+book_words <- count(book_words, book, word, sort = TRUE)
+
+# agrupando a frequência dos tokens em cada 
+# categoria (livro correspondente)
+total_words <- group_by(book_words, book) 
+
+total_words
+
+# obtem número total de palavras de cada uma das
+# categorias (livros)
+total_words <- summarize(total_words, total = sum(n))
+
+# junta o número de palavras com a tabela de 
+# frequência de termos
+book_words <- left_join(book_words, total_words)
+
+book_words
+
+# visualização 
+ggplot(book_words, aes(n/total, fill = book)) +
+  geom_histogram(show.legend = FALSE) +
+  xlim(NA, 0.0009) +
+  labs(x = "tf") +
+  labs(y = "número de termos") +
+  facet_wrap(~book, ncol = 2, scales = "free_y")
+
+# calcula e vincula as colunas tf, idf e tf_idf 
+# no dataframe
+book_words <- bind_tf_idf(book_words, word, book, n)
+
+#ordena os termos por maior tf_idf
+book_words<-book_words[order(book_words$tf_idf, decreasing = TRUE),]
+
+book_words
+
+# visualização dos 5 termos com maior tf_idf por livro
+book_words %>%
+  arrange(desc(tf_idf)) %>%
+  mutate(word = factor(word, levels = rev(unique(word)))) %>% 
+  group_by(book) %>% top_n(5) %>% 
+  ungroup() %>%
+  ggplot(aes(word, tf_idf, fill = book)) +
+  geom_col(show.legend = FALSE) +
+  labs(x = NULL, y = "tf-idf") +
+  facet_wrap(~book, ncol = 2, scales = "free") +
+  coord_flip()
+
+library(tm)
+library(proxy)
+library(ecodist)
+
+# vetores dos termos Jealous e Gossip (consultas)
+jealous <- c(0, 1)
+gossip <- c(1, 0)  
+
+# definindo vetores dos livros
+# de acordo com os termos Jealous e Gossip
+SaS <- c(2, 10)
+PaP <- c(0, 7)
+WH <- c(6, 11)
+
+# criando uma matriz com os vetores anteriores
+matriz_vetores <- rbind(jealous, gossip, SaS, PaP, WH)
+
+matriz_vetores
+
+# calculando a similaridade entre todos 
+# os documentos e consultas
+similaridades <- full(simil(matriz_vetores, "cosine"))
+similaridades
+
+# carrega biblioteca
+library(superml)
+
+# instancia documentos
+docs <- c("white audi 2.5 car",
+          "black shoes from office",
+          "new mobile iphone 7",
+          "audi tyres audi a3",
+          "nice audi bmw toyota corolla")
+
+# calcula bm25 dos documentos
+get_bm <- bm25$new(docs, use_parallel = FALSE)
+
+# inclui novo documento como consulta
+input_document <- c("black toyota corolla")
+
+# obtem os 2 documentos mais proximos
+get_bm$most_similar(document = input_document, topn = 2)

@@ -1,0 +1,67 @@
+############################################
+#             PROCESSANDO O TEXTO          #
+############################################
+# Referência: https://cran.r-project.org/web/packages/corpus/vignettes/corpus.html
+processamento_do_texto <- function(arquivo) {
+	# Carregando o texto do livro
+	lines <- readLines("oz.txt", encoding = "UTF-8")
+
+	# Determinando o inicio efetivo do livro
+	half_title <- grep("^THE WONDERFUL WIZARD OF OZ", lines)
+
+	# Determinando inicio dos capitulos que comecam depois de um numero
+	chapter <- grep("^[[:space:]]*[[:digit:]]+\\.", lines)
+	chapter <- chapter[chapter > half_title]
+
+	# Obtendo o nome dos capitulos
+	start <- c(1, chapter + 1) # + 1 para pular o titulo
+	end <- c(chapter - 1, length(lines))
+	text <- mapply(function(s, e) paste(lines[s:e], collapse = "\n"), start, end)
+
+	# Removendo espacos brancos em sequencia
+	text <- trimws(text)
+	# Descartando paginas iniciais
+	text <- text[-1]
+
+	# Obtendo os titulos dos capitulos e removendo as numeracoes ("1.", "2.", etc.)
+	title <- sub("^[[:space:]]*[[:digit:]]+[.][[:space:]]*", "", lines[chapter])
+	# Removendo espacos brancos em sequencia
+	title <- trimws(title)
+
+	# Vinculando titulo do capitulo com texto do capitulo
+	data <- corpus_frame(title, text)
+
+	# Incluindo o nome da linha com numeracao do capitulo
+	rownames(data) <- sprintf("ch%02d", seq_along(chapter))
+
+	return (data)
+}
+
+############################################
+#              APLICANDO MODELOS           #
+############################################
+
+scores_termo_consulta <- function(estatistica_docs, termo_query, stat) {
+	term_values <- estatistica_docs[estatistica_docs$term == termo_query,]
+	term_values <- term_values[,c("doc_id", stat)]
+	names(term_values)[names(term_values) == stat] <- paste(stat,termo_query, sep="-")
+	print(head(term_values))
+	return(term_values)
+}
+
+get_query_statistics <- function(stat_name, chapter_words_stats, tokens_query) {
+  # buscando os valores das estatísticas para o primeiro termo da consulta
+  stats <- scores_termo_consulta(chapter_words_stats, tokens_query[[1]][1], stat_name)
+  # tratando os tokens seguintes
+	for (i in c(2:length(tokens_query))) {
+		t <- tokens_query[[1]][i]
+		# consultando as estatísticas 
+		aux <- scores_termo_consulta(chapter_words_stats, t, stat_name)
+		# unindo as estatísticas em um único data-frame
+		stats <- left_join(stats, aux)
+	}
+  # substituindo valores NA (faltantes) por 0
+	stats[is.na(stats)] <- 0
+	return(stats)
+}
+
